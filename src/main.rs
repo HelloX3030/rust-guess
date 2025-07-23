@@ -1,15 +1,17 @@
-use std::io::{self, BufReader};
+use std::io::BufReader;
 use std::io::BufRead;
 use std::fs::File;
 use rand::Rng;
 use std::env;
+use std::io::{self, Write};
 
 fn main() ->Result<(), Box<dyn std::error::Error>> {
     let secret_number = rand::thread_rng().gen_range(1..=100);
 
     loop {
         let mut guess = String::new();
-        println!("Please input your guess:");
+        print!("> ");
+        io::stdout().flush()?;
         io::stdin()
             .read_line(&mut guess)
             .expect("Failed to read line");
@@ -49,10 +51,25 @@ fn main() ->Result<(), Box<dyn std::error::Error>> {
             return Err(e.into());
         }
     };
+
+    let mut words: Vec<String> = Vec::new();
     let reader = BufReader::new(file);
     for line_result in reader.lines() {
         let line = line_result?;
-        println!("line: {}", line);
+        let line = line.trim().to_string();
+        if line != "" {
+            words.push(line);
+        }
     }
+    if words.len() <= 0 {
+        return  Err("No words found!".into());
+    }
+    let word_i = rand::thread_rng().gen_range(0..words.len());
+    let word = match words.get(word_i) {
+        Some(w) => w,
+        None => {
+            return Err(format!("Index out of Bounds \"{}\"", word_i).into());
+        }
+    };
     Ok(())
 }
