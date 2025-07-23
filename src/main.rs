@@ -5,6 +5,8 @@ use rand::Rng;
 use std::env;
 use std::io::{self, Write};
 
+const HIDDEN_CHARAKTER: char = '*';
+
 fn main() ->Result<(), Box<dyn std::error::Error>> {
     let secret_number = rand::thread_rng().gen_range(1..=100);
 
@@ -57,6 +59,9 @@ fn main() ->Result<(), Box<dyn std::error::Error>> {
     for line_result in reader.lines() {
         let line = line_result?;
         let line = line.trim().to_string();
+        if line.contains(HIDDEN_CHARAKTER) {
+            return  Err(format!("Found Limiter \"{}\"", HIDDEN_CHARAKTER).into());
+        }
         if line != "" {
             words.push(line);
         }
@@ -71,5 +76,10 @@ fn main() ->Result<(), Box<dyn std::error::Error>> {
             return Err(format!("Index out of Bounds \"{}\"", word_i).into());
         }
     };
+    let mut guessed_word = String::new();
+    for _ in word.chars() {
+        guessed_word.push(HIDDEN_CHARAKTER);
+    }
+    println!("Current Word: {}", guessed_word);
     Ok(())
 }
