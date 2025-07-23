@@ -6,19 +6,20 @@ use std::env;
 use std::io::{self, Write};
 
 const HIDDEN_CHARAKTER: char = '*';
+const PROMPT: &str = "> ";
 
-fn main() ->Result<(), Box<dyn std::error::Error>> {
+fn guess_number() -> Result<(), Box<dyn std::error::Error>>{
+    println!("Welcome to the Great Game of Number Guessing!");
+
     let secret_number = rand::thread_rng().gen_range(1..=100);
 
     loop {
         let mut guess = String::new();
-        print!("> ");
+        print!("{}", PROMPT);
         io::stdout().flush()?;
-        io::stdin()
-            .read_line(&mut guess)
-            .expect("Failed to read line");
+        io::stdin().read_line(&mut guess)?;
         let guess = guess.trim();
-        if guess == "exit" { break; }
+        if guess == "exit" { return Ok(()); }
 
         println!("You guessed: \"{}\"", guess);
 
@@ -39,6 +40,11 @@ fn main() ->Result<(), Box<dyn std::error::Error>> {
             break;
         }
     }
+    return Ok(())
+}
+
+fn hang_man() -> Result<(), Box <dyn std::error::Error>> {
+    println!("Welcome to the Great Game of Hangman, were only one will have the great honor, to be hanged!");
 
     let args: Vec<String> = env::args().collect();
     if args.len() != 2 {
@@ -80,6 +86,30 @@ fn main() ->Result<(), Box<dyn std::error::Error>> {
     for _ in word.chars() {
         guessed_word.push(HIDDEN_CHARAKTER);
     }
-    println!("Current Word: {}", guessed_word);
+    loop {
+        if guessed_word == *word {
+            break;
+        }
+        println!("Current Word: {}", guessed_word);
+        let mut user_input = String::new();
+        print!("{}", PROMPT);
+        io::stdout().flush()?;
+        io::stdin().read_line(&mut user_input)?;
+        if let Some( user_input) = user_input.trim().chars().next() {
+            println!("No Valid User Input found");
+            continue;
+        }
+    }
+    println!("Ohhh now, you won thos intense Bossfight!");
+    Ok(())
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    if let Err(e) = guess_number(){
+        println!("Number Guessing Failed: {}", e);
+    }
+    if let Err(e) = hang_man(){
+        println!("Hang Man Failed: {}", e);
+    }
     Ok(())
 }
