@@ -9,7 +9,7 @@ const HIDDEN_CHARAKTER: char = '*';
 const PROMPT: &str = "> ";
 
 fn guess_number() -> Result<(), Box<dyn std::error::Error>>{
-    println!("Welcome to the Great Game of Number Guessing!");
+    println!("Welcome to the Great Game of Number Guessing! (Aka who is the donkey? You!)");
 
     let secret_number = rand::thread_rng().gen_range(1..=100);
 
@@ -83,6 +83,7 @@ fn hang_man() -> Result<(), Box <dyn std::error::Error>> {
         }
     };
     let mut guessed_word = String::new();
+    let mut hp = 5;
     for _ in word.chars() {
         guessed_word.push(HIDDEN_CHARAKTER);
     }
@@ -91,16 +92,47 @@ fn hang_man() -> Result<(), Box <dyn std::error::Error>> {
             break;
         }
         println!("Current Word: {}", guessed_word);
+        print!("HP: ");
+        for _ in 0..hp {
+            print!("♥");
+        }
+        println!("");
         let mut user_input = String::new();
         print!("{}", PROMPT);
         io::stdout().flush()?;
         io::stdin().read_line(&mut user_input)?;
-        if let Some( user_input) = user_input.trim().chars().next() {
+        let user_input = user_input.trim();
+        if user_input == "exit" {
+            return Ok(());
+        }
+        else if user_input.len() != 1 {
+                println!("Invalid input!");
+                continue;
+        }
+        if let Some( user_input) = user_input.chars().next() {
+            let mut found: bool = false;
+            let mut guessed_word_vec = guessed_word.chars().collect::<Vec<char>>();
+            for (i, c) in word.chars().enumerate(){
+                if c == user_input {
+                    found = true;
+                    guessed_word_vec[i] = user_input;
+                }
+            }
+            guessed_word = guessed_word_vec.iter().collect();
+            if !found {
+                println!("Muhahahahahahahahahahah!");
+                hp -= 1;
+                if hp <= 0 {
+                    return Err("Skill Issue!".into());
+                }
+            }
+        }
+        else {
             println!("No Valid User Input found");
             continue;
         }
     }
-    println!("Ohhh now, you won thos intense Bossfight!");
+    println!("Ohhh noooooooo, you won this intense Bossfight!");
     Ok(())
 }
 
