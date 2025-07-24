@@ -32,11 +32,11 @@ pub fn hang_man() -> Result<(), Box<dyn std::error::Error>> {
         if line.contains(HIDDEN_CHARAKTER) {
             return Err(format!("Found Limiter \"{}\"", HIDDEN_CHARAKTER).into());
         }
-        if line != "" {
+        if !line.is_empty() {
             words.push(line);
         }
     }
-    if words.len() <= 0 {
+    if words.is_empty() {
         return Err("No words found!".into());
     }
     let word_i = rand::thread_rng().gen_range(0..words.len());
@@ -60,7 +60,7 @@ pub fn hang_man() -> Result<(), Box<dyn std::error::Error>> {
         for _ in 0..hp {
             print!("♥");
         }
-        println!("");
+        println!();
         let mut user_input = String::new();
         print!("{}", PROMPT);
         io::stdout().flush()?;

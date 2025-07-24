@@ -27,14 +27,18 @@ pub fn guess_number() -> Result<(), Box<dyn std::error::Error>> {
             }
         };
 
-        if guess < secret_number {
-            println!("Too small!");
-        } else if guess > secret_number {
-            println!("Too big!");
-        } else {
-            println!("It lookes like you are not a donkey, but the real challange begins now!");
-            break;
-        }
+        match guess.cmp(&secret_number) {
+            std::cmp::Ordering::Less => {
+                println!("Too small!");
+            }
+            std::cmp::Ordering::Greater => {
+                println!("Too big!");
+            }
+            std::cmp::Ordering::Equal => {
+                println!("It looks like you are not a donkey, but the real challenge begins now!");
+                break;
+            }
+        }        
     }
-    return Ok(());
+    Ok(())
 }
