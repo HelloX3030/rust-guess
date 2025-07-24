@@ -38,7 +38,7 @@ pub fn guess_number() -> Result<(), Box<dyn std::error::Error>> {
                 println!("It looks like you are not a donkey, but the real challenge begins now!");
                 break;
             }
-        }        
+        }
     }
     Ok(())
 }
