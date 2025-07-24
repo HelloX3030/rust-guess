@@ -4,7 +4,88 @@ use rand::Rng;
 use std::env;
 use std::io::{self, Write};
 
-pub fn reveal_word(secret: &str, guessed_letters: &str, hidden_char: char) -> String {
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn reveal_word_basic() {
+        let secret = "rustacean";
+        let guessed = "rta";
+
+        let expected: String = secret
+            .chars()
+            .map(|c| if guessed.to_lowercase().contains(c.to_ascii_lowercase()) { c } else { HIDDEN_CHARAKTER })
+            .collect();
+
+        let result = reveal_word(secret, guessed);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn reveal_word_case_insensitive() {
+        let secret = "Rustacean";
+        let guessed = "RTA";
+
+        let expected: String = secret
+            .chars()
+            .map(|c| if guessed.to_lowercase().contains(c.to_ascii_lowercase()) { c } else { HIDDEN_CHARAKTER })
+            .collect();
+
+        let result = reveal_word(secret, guessed);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn reveal_word_no_guesses() {
+        let secret = "hello";
+        let guessed = "";
+
+        // All characters replaced with HIDDEN_CHARAKTER:
+        let expected = std::iter::repeat(HIDDEN_CHARAKTER).take(secret.len()).collect::<String>();
+
+        let result = reveal_word(secret, guessed);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn reveal_word_all_guessed() {
+        let secret = "test";
+        let guessed = "test";
+
+        // All revealed, should be same as secret
+        let expected = secret.to_string();
+
+        let result = reveal_word(secret, guessed);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn reveal_word_empty_secret() {
+        let secret = "";
+        let guessed = "abc";
+
+        // Empty secret, expect empty string
+        let expected = "".to_string();
+
+        let result = reveal_word(secret, guessed);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn reveal_word_wrong_test() {
+        let secret = "ABCDEFG";
+        let guessed = "abc";
+
+        // Empty secret, expect empty string
+        let expected = "".to_string();
+
+        let result = reveal_word(secret, guessed);
+        assert_eq!(result, expected);
+    }
+}
+
+pub fn reveal_word(secret: &str, guessed_letters: &str) -> String {
     let guessed_lowercase = guessed_letters.to_lowercase();
 
     secret
@@ -13,7 +94,7 @@ pub fn reveal_word(secret: &str, guessed_letters: &str, hidden_char: char) -> St
             if guessed_lowercase.contains(c.to_ascii_lowercase()) {
                 c
             } else {
-                hidden_char
+                HIDDEN_CHARAKTER
             }
         })
         .collect()
@@ -40,7 +121,7 @@ pub fn hang_man() -> Result<(), Box<dyn std::error::Error>> {
     let mut hp = 5;
 
     loop {
-        let guessed_word = reveal_word(word, &guessed_letters, HIDDEN_CHARAKTER);
+        let guessed_word = reveal_word(word, &guessed_letters);
 
         if guessed_word == *word {
             break;
