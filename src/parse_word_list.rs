@@ -1,6 +1,6 @@
+use std::error::Error;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-use std::error::Error;
 
 pub fn parse_word_list(path: &str, forbidden_char: char) -> Result<Vec<String>, Box<dyn Error>> {
     let file = File::open(path)?;

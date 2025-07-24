@@ -20,7 +20,7 @@ pub fn hang_man() -> Result<(), Box<dyn std::error::Error>> {
         Some(w) => w,
         None => return Err(format!("Index out of Bounds \"{}\"", word_i).into()),
     };
-    
+
     let mut guessed_word = String::new();
     let mut hp = 5;
     for _ in word.chars() {
