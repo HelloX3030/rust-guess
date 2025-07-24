@@ -4,6 +4,21 @@ use rand::Rng;
 use std::env;
 use std::io::{self, Write};
 
+pub fn reveal_word(secret: &str, guessed_letters: &str, hidden_char: char) -> String {
+    let guessed_lowercase = guessed_letters.to_lowercase();
+
+    secret
+        .chars()
+        .map(|c| {
+            if guessed_lowercase.contains(c.to_ascii_lowercase()) {
+                c
+            } else {
+                hidden_char
+            }
+        })
+        .collect()
+}
+
 pub fn hang_man() -> Result<(), Box<dyn std::error::Error>> {
     println!("Welcome to the Great Game of Hangman, were only one will have the great honor, to be hanged!");
 
@@ -21,43 +36,49 @@ pub fn hang_man() -> Result<(), Box<dyn std::error::Error>> {
         None => return Err(format!("Index out of Bounds \"{}\"", word_i).into()),
     };
 
-    let mut guessed_word = String::new();
+    let mut guessed_letters = String::new();
     let mut hp = 5;
-    for _ in word.chars() {
-        guessed_word.push(HIDDEN_CHARAKTER);
-    }
+
     loop {
+        let guessed_word = reveal_word(word, &guessed_letters, HIDDEN_CHARAKTER);
+
         if guessed_word == *word {
             break;
         }
+
         println!("Current Word: {}", guessed_word);
         print!("HP: ");
         for _ in 0..hp {
             print!("♥");
         }
         println!();
+
         let mut user_input = String::new();
         print!("{}", PROMPT);
         io::stdout().flush()?;
         io::stdin().read_line(&mut user_input)?;
         let user_input = user_input.trim();
+
         if user_input == "exit" {
             return Ok(());
         } else if user_input.len() != 1 {
             println!("Invalid input!");
             continue;
         }
-        if let Some(user_input) = user_input.chars().next() {
-            let mut found: bool = false;
-            let mut guessed_word_vec = guessed_word.chars().collect::<Vec<char>>();
-            for (i, c) in word.chars().enumerate() {
-                if c == user_input {
-                    found = true;
-                    guessed_word_vec[i] = user_input;
-                }
+
+        if let Some(letter) = user_input.chars().next() {
+            let letter_lower = letter.to_ascii_lowercase();
+
+            if guessed_letters.to_ascii_lowercase().contains(letter_lower) {
+                println!("You already guessed '{}'", letter);
+                continue;
             }
-            guessed_word = guessed_word_vec.iter().collect();
-            if !found {
+
+            guessed_letters.push(letter);
+
+            if word.to_ascii_lowercase().contains(letter_lower) {
+                println!("Good guess!");
+            } else {
                 println!("Muhahahahahahahahahahah!");
                 hp -= 1;
                 if hp <= 0 {
@@ -69,6 +90,7 @@ pub fn hang_man() -> Result<(), Box<dyn std::error::Error>> {
             continue;
         }
     }
+
     println!("Ohhh noooooooo, you won this intense Bossfight!");
     Ok(())
 }
