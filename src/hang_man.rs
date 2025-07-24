@@ -1,10 +1,7 @@
 use crate::base::*;
-
+use crate::parse_word_list::parse_word_list;
 use rand::Rng;
 use std::env;
-use std::fs::File;
-use std::io::BufRead;
-use std::io::BufReader;
 use std::io::{self, Write};
 
 pub fn hang_man() -> Result<(), Box<dyn std::error::Error>> {
@@ -16,36 +13,14 @@ pub fn hang_man() -> Result<(), Box<dyn std::error::Error>> {
         return Err("Provide a file, you idiot!".into());
     }
 
-    let file = match File::open(&args[1]) {
-        Ok(f) => f,
-        Err(e) => {
-            println!("Failed to open file '{}': {}", &args[1], e);
-            return Err(e.into());
-        }
-    };
+    let words = parse_word_list(&args[1], HIDDEN_CHARAKTER)?;
 
-    let mut words: Vec<String> = Vec::new();
-    let reader = BufReader::new(file);
-    for line_result in reader.lines() {
-        let line = line_result?;
-        let line = line.trim().to_string();
-        if line.contains(HIDDEN_CHARAKTER) {
-            return Err(format!("Found Limiter \"{}\"", HIDDEN_CHARAKTER).into());
-        }
-        if !line.is_empty() {
-            words.push(line);
-        }
-    }
-    if words.is_empty() {
-        return Err("No words found!".into());
-    }
     let word_i = rand::thread_rng().gen_range(0..words.len());
     let word = match words.get(word_i) {
         Some(w) => w,
-        None => {
-            return Err(format!("Index out of Bounds \"{}\"", word_i).into());
-        }
+        None => return Err(format!("Index out of Bounds \"{}\"", word_i).into()),
     };
+    
     let mut guessed_word = String::new();
     let mut hp = 5;
     for _ in word.chars() {

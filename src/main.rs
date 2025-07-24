@@ -2,6 +2,7 @@
 mod base;
 mod guess_number;
 mod hang_man;
+mod parse_word_list;
 
 use guess_number::guess_number;
 use hang_man::hang_man;
