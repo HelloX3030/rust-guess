@@ -2,7 +2,7 @@ use crate::base::*;
 use rand::Rng;
 use std::io::{self, Write};
 
-pub fn guess_number() -> Result<(), Box<dyn std::error::Error>>{
+pub fn guess_number() -> Result<(), Box<dyn std::error::Error>> {
     println!("Welcome to the Great Game of Number Guessing! (Aka who is the donkey? You!)");
 
     let secret_number = rand::thread_rng().gen_range(1..=100);
@@ -13,7 +13,9 @@ pub fn guess_number() -> Result<(), Box<dyn std::error::Error>>{
         io::stdout().flush()?;
         io::stdin().read_line(&mut guess)?;
         let guess = guess.trim();
-        if guess == "exit" { return Ok(()); }
+        if guess == "exit" {
+            return Ok(());
+        }
 
         println!("You guessed: \"{}\"", guess);
 
@@ -34,5 +36,5 @@ pub fn guess_number() -> Result<(), Box<dyn std::error::Error>>{
             break;
         }
     }
-    return Ok(())
+    return Ok(());
 }

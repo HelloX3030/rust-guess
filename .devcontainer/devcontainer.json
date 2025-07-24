@@ -1,6 +1,9 @@
 {
     "name": "Rust Dev",
     "image": "rust:1.77",
-    "extensions": ["rust-lang.rust-analyzer"],
+    "extensions": [
+      "rust-lang.rust-analyzer"
+    ],
     "postCreateCommand": "cargo fetch"
-}
+  }
+  
