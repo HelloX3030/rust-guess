@@ -15,7 +15,13 @@ mod tests {
 
         let expected: String = secret
             .chars()
-            .map(|c| if guessed.to_lowercase().contains(c.to_ascii_lowercase()) { c } else { HIDDEN_CHARAKTER })
+            .map(|c| {
+                if guessed.to_lowercase().contains(c.to_ascii_lowercase()) {
+                    c
+                } else {
+                    HIDDEN_CHARAKTER
+                }
+            })
             .collect();
 
         let result = reveal_word(secret, guessed);
@@ -29,7 +35,13 @@ mod tests {
 
         let expected: String = secret
             .chars()
-            .map(|c| if guessed.to_lowercase().contains(c.to_ascii_lowercase()) { c } else { HIDDEN_CHARAKTER })
+            .map(|c| {
+                if guessed.to_lowercase().contains(c.to_ascii_lowercase()) {
+                    c
+                } else {
+                    HIDDEN_CHARAKTER
+                }
+            })
             .collect();
 
         let result = reveal_word(secret, guessed);
@@ -42,7 +54,9 @@ mod tests {
         let guessed = "";
 
         // All characters replaced with HIDDEN_CHARAKTER:
-        let expected = std::iter::repeat(HIDDEN_CHARAKTER).take(secret.len()).collect::<String>();
+        let expected = std::iter::repeat(HIDDEN_CHARAKTER)
+            .take(secret.len())
+            .collect::<String>();
 
         let result = reveal_word(secret, guessed);
         assert_eq!(result, expected);
